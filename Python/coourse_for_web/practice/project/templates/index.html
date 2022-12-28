@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style type="text/css">
+        input { 
+        margin: 0; padding: 0;
+        display: block;
+        font-size: 18px;
+        padding: 10px;
+        margin-bottom: 10px;
+        outline: none;
+        border-radius: 5px;
+        border: 1px solid black;
+        width: 100%;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            align-items: center;
+            background-color: wheat;
+        }
+        form {
+            width: 90%;
+            max-width: 250px;
+            min-width: 350px;
+        }
+    </style>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function(){
+            console.log("Hello!");
+            let btn = document.querySelector("input[type=submit]");
+<!--            btn.style.backgroundColor = "yellow";-->
+            btn.addEventListener("click", async function(event){
+                event.preventDefault();
+<!--            let username = document.querySelector("input[name=username]").value;   -->
+<!--            let password = document.querySelector("input[name=password]").value;   -->
+<!--                console.log(username, password);  -->
+                let responce = await fetch("/login", {
+                    method: "POST",
+                    body: new FormData(document.querySelector('form'))
+                });
+                let responce_text = await responce.text();
+                console.log("responce is ", responce_text);
+            })
+
+        })
+    </script>
+</head>
+<body>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <form action="/login" class="feedback-form" method="POST">
+        <input type="text" name="username">
+        <input type="password" name="password">
+        <input type="submit" value="Войти">
+    </form>
+</body>
+</html>

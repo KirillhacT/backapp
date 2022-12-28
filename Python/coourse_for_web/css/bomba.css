@@ -1,0 +1,28 @@
+#avatar {
+    width: 60%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+img.my_photo{
+    border: 5px solid rgb(0, 238, 255);
+}
+p .centered {
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+    text-align: auto;
+}
+body {
+    background: #ffffee;
+    padding: 15px;
+}
+a {
+    color: black;
+}
+
+.feedback-form input, .feedback-form textarea {
+    width: 100%;
+}
+.feedback-form textarea {
+    height: 100px;
+}

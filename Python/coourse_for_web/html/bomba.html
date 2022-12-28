@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../css/bomba.css">
+    <style type="text/css">
+        * {
+            padding: 0;
+            margin: 0;
+        }   
+    </style>
+    <script type="text/javascript">
+        window.onload = function() {
+            // alert("Привет мир!");
+            document.querySelector(".primer").style.color = "green";
+            let h1 = document.querySelector("h1");
+            h1.addEventListener("click", function() {
+                h1.style.color = "red"; 
+            })
+        }
+        
+    </script>
+</head>
+<body>
+    <h1>Привет мир, снова!</h1>
+    <p class="primer">Начинаем учить HTML</p>
+    <p>Да-да, снова</p>
+
+    <h2>Важный инсайд</h2>
+    <p>На этот раз я не брошу, обещаю!)))</p>
+    <br>
+    <p>
+        <img id="avatar" class="my_photo centered" src="../img/7.1 Задание.jpg" alt="">
+    </p>
+    <a href="https://google.com" target="_blank" style="font-size: 20px;">Гугол</a>
+
+    <form action="/send-feedback/" class="feedback-form" method="POST">
+        <p>Отправь мне сообщение!</p>
+        <p><input type="text" name="name" placeholder="Ваше имя"></p>
+        <br>
+        <p><textarea name="message" placeholder="Ваше сообщение"></textarea></p>
+        <p><input type="submit" value="Отправить"></p>
+    </form>
+</body>
+</html>
