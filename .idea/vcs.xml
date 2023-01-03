@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Python/algoritms/Practice" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Python/algoritms/Thiryanov/My_Learning" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/django" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/yandex_project/yandex" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/yandex_project/yandex1" vcs="Git" />
   </component>
 </project>
