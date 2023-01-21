@@ -68,3 +68,4 @@ import os
 #     print("3) Треугольник не существует")
 
 # print(os.path())
+

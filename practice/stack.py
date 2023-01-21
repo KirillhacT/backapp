@@ -1,8 +1,11 @@
 from typing import Union, Dict
 
 class Stack:
-    def __init__(self):
-        self.__mas = []
+    def __init__(self, line: list = None) -> None:
+        if line is None:
+            self.__mas = []
+        else:
+            self.__mas = line
         self.dict = {}
         self.indicator = 0
 
@@ -23,10 +26,17 @@ class Stack:
     def __getitem__(self, item: int):
         return self.get_element(item)
 
+    def __setitem__(self, key, value):
+        self.__mas[len(self.__mas) - key - 1] = value
+        return self
+
+    def __add__(self, other):
+        new_mas = self.__mas + other.__mas
+        return self.__class__(new_mas)
+
     def pop(self) -> Union[str, int]:
         self.set_dict(self.pop.__name__)
         return self.__mas.pop()
-
 
     def push(self, param: Union[str, int]) -> None:
         self.set_dict(self.push.__name__)
@@ -51,14 +61,27 @@ class Stack:
         return self.dict
 
     def get_element(self, item) -> Union[str, int]:
+        print()
         return self.__mas[len(self.__mas) - item - 1]
 
-# A = Stack()
-# A.clear()
-# A.push(1)
-# A.push(2)
-# A.push(3)
-# A.push(4)
+
+
+
+A = Stack()
+A.clear()
+A.push(1)
+A.push(2)
+A.push(3)
+A.push(4)
+
+B = Stack()
+B.push(5)
+B.push(6)
+
+C = A + B
+
+for i in C:
+    print(i)
 
 # for i in range(len(A)):
 #     print(A[i])

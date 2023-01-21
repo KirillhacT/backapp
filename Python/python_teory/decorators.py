@@ -22,6 +22,45 @@ def say(name, count):
 # say("Vasya", 1)
 say("Egor", 1)
 
+#Example
+from functools import wraps
+
+count = {}
+
+def counter(func):
+    count[func.__name__] = 0
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print(f"функция {func.__name__} вызвана")
+        count[func.__name__] += 1
+        func(*args, **kwargs)
+
+    return wrapper
+
+def dealer(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print(f"Вызвана до вызова функции {func.__name__}")
+        func(*args, **kwargs)
+        print(f"Вызвана после вызова функции {func.__name__}")
+    return wrapper
+
+@dealer
+@counter
+def first():
+    pass
+
+@dealer
+@counter
+def second():
+    pass
+
+first = dealer(counter(first))
+first()
+
+print(count)
+
+
 
 
         
