@@ -1,4 +1,5 @@
-import os
+import time
+
 # print("x y z w")
 # for x in range(2):
 #     for y in range(2):
@@ -68,4 +69,9 @@ import os
 #     print("3) Треугольник не существует")
 
 # print(os.path())
+
+for i in range(1, 101):
+    print(f"\r{i}", end="")
+    time.sleep(0.5)
+
 

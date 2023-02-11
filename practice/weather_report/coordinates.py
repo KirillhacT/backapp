@@ -4,7 +4,6 @@ from geopy.location import Location
 
 from exceptions import CantGetCoordinates
 import config
-addres = ""
 
 class Coordinates(NamedTuple):
     latitude: float
@@ -28,20 +27,15 @@ def _get_currect_locale() -> Location:
     return locale
 
 def _get_locale() -> Location:
-    global addres
-    addres = _get_addres()
     geolocator = Nominatim(user_agent="run")
-    locale = geolocator.geocode(addres)
+    locale = geolocator.geocode(config.ADDRES)
     return locale
 
-def _get_addres():
-    addres = input()
-    return addres
 
 def _round_coordinates(coordinates: Coordinates) -> Coordinates:
     if not config.USE_ROUNDED_COORDS:
         return coordinates
-    return Coordinates(*map(lambda x: round(x, 1),[
+    return Coordinates(*map(lambda x: round(x, 1), [
         coordinates.latitude,
-        coordinates.longitude
+        coordinates.longitude,
     ]))

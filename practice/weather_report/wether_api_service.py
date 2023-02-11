@@ -6,7 +6,7 @@ from urllib.error import URLError
 import json
 from json.decoder import JSONDecodeError
 
-from coordinates import Coordinates, addres
+from coordinates import Coordinates
 from exceptions import ApiServiceError
 import config
 
@@ -57,7 +57,7 @@ def _parse_openweather_responce(openweather_responce: str) -> Weather:
     return Weather(
         temperature=_parse_temperature(openweather_dict),
         weather_type=_parse_weather_type(openweather_dict),
-        city=addres,
+        city=config.GET_ADDRES(),
         time=_parse_time(openweather_dict)
     )
 
