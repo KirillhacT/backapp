@@ -49,6 +49,7 @@ class Framework:
 
         if not path.endswith("/"):
             path = f"{path}/"
+        request = self.get_request(environ)
 
         #Находим нужный контроллер
         if path in self.routes_lst:
@@ -58,7 +59,6 @@ class Framework:
 
 
         #Получаем данные запроса
-        request = self.get_request(environ)
         code, body = view(request)
 
         # request = {}

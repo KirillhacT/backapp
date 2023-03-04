@@ -1,46 +1,51 @@
 import quopri
 from typing import Union
 
-class User:
-    pass
 
-class Teacher:
-    pass
+class PostMapper:
+    def __init__(self, connection):
+        self.connection = connection
+        self.cursor = connection.cursor()
+        self.tablename = "posts"
 
-class Student:
-    pass
+    def all(self):
+        statement = f"SELECT * from {self.tablename}"
+        self.cursor.execute(statement)
+        result = []
+        for item in self.cursor.fetchall():
+            title, description = item
+            post = Post(title, description)
+            result.append(post)
+        return result
 
-class UserFactory:
+    def find_by_title(self, title):
+        statement = f"SELECT title, description FROM {self.tablename} WHERE title={title}"
+        self.cursor.execute(statement)
+        result = self.cursor.fetchone()
+        if result:
+            return Post(*result)
+        else:
+            raise Exception("Page not found")
+
+    def insert(self, obj):
+        statement = f"UPDATE {self.tablename} SET description={obj.description} WHERE title={obj.title}"
+        try:
+            self.connection.commit()
+        except Exception as ex:
+            print(ex)
+class Post:
+    def __init__(self, title, description):
+        self.title = title
+        self.description = description
+
+class PostFactory:
     types = {
-        'student': Student,
-        'teacher': Teacher
+        "post": Post
     }
-
     @classmethod
-    def create(cls, type_):
-        return cls.types[type_]()
+    def create(cls, type_, title, description):
+        return cls.types[type_](title, description)
 
-class Course:
-    def __init__(self, name, category):
-        self.name = name
-        self.category = category
-        self.category.courses.append(self)
-
-class InteractiveCourse(Course):
-    pass
-
-class RecordCourse(Course):
-    pass
-
-class CourseFactory:
-    types = {
-        'interactive': InteractiveCourse,
-        "record": RecordCourse,
-    }
-
-    @classmethod
-    def create(cls, type_, name, category):
-        return cls.types[type_](name, category)
 
 class Category:
     auto_id = 0
@@ -49,32 +54,17 @@ class Category:
         Category.auto_id += 1
         self.name = name
         self.category = category
-        self.courses = []
-
-    def course_count(self):
-        result = len(self.courses)
-        if self.category:
-            result += self.category.courses_count()
-        return result
 
 class Engine:
     def __init__(self):
-        self.teachers = []
-        self.students = []
         self.courses = []
         self.categories = []
+        self.posts = []
 
     @staticmethod
-    def create_user(type_) -> Union[Teacher, Student]:
-        return UserFactory.create(type_)
-
-    @staticmethod
-    def create_category(name, category=None) -> Category:
-        return Category(name, category)
-
-    @staticmethod
-    def create_course(type_, name, category) -> Union[InteractiveCourse, RecordCourse]:
-        return CourseFactory.create(type_, name, category)
+    def create_post(title, description) -> Post:
+        post = PostFactory.create("post", title, description)
+        return post
 
     @staticmethod
     def decode_value(val):
@@ -82,17 +72,15 @@ class Engine:
         val_decode_str = quopri.decodestring(val_b)
         return val_decode_str.decode("utf-8")
 
+    @staticmethod
+    def create_category(name, category=None) -> Category:
+        return Category(name, category)
+
     def find_category_by_id(self, id):
         for item in self.categories:
             print("item", item.id)
             if item.id == id:
                 return item
-        raise Exception(f"Нет категории с id = {id}")
-
-    def get_course(self, name):
-        for item in self.courses:
-            if item.name == name:
-                return item
-        return None
+        raise Exception(f"РќРµС‚ РєР°С‚РµРіРѕСЂРёРё СЃ id = {id}")
 
 
