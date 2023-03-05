@@ -1,5 +1,6 @@
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, \
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, \
     InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.utils.callback_data import CallbackData
 
 start_kb = ReplyKeyboardMarkup(resize_keyboard=True)
 start_b1 = KeyboardButton("Меню")
@@ -8,11 +9,20 @@ start_kb.add(start_b1)
 start_kb.insert(start_b2)
 
 ikb = InlineKeyboardMarkup(row_width=2)
-
-ib1 = InlineKeyboardButton(text='Да', callback_data="like")
-ib2 = InlineKeyboardButton(text='Нет', callback_data="dislike")
+ib1 = InlineKeyboardButton(text='❤️', callback_data="like")
+ib2 = InlineKeyboardButton(text='👎', callback_data="dislike")
 ib3 = InlineKeyboardButton(text='Следующее фото', callback_data="dont_like")
-ikb.add(ib1, ib2).add(ib3)
+ib4= InlineKeyboardButton(text='Главное меню', callback_data="menu")
+ikb.add(ib1, ib2).add(ib3).add(ib4)
+
+cb = CallbackData("ikb", "action")
+
+def get_inline_keyboard() -> InlineKeyboardMarkup:
+    ikb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton("Прибавить", callback_data=cb.new('btn_+')), InlineKeyboardButton("Убавить", callback_data=cb.new("btn_-"))],
+        [InlineKeyboardButton("Рандомное число", callback_data=cb.new("btn_random"))]
+    ])
+    return ikb
 
 class ExitReplay:
     def __init__(self, *params, exit=True):
@@ -29,7 +39,7 @@ class ExitReplay:
         k_i = KeyboardButton(_param)
         self.kb.add(k_i)
 
-menu_kb = ExitReplay('Помощь', 'Отправить фото', 'Секрет', exit=False)()
+menu_kb = ExitReplay('Помощь', 'Отправить фото', 'Счетчик', "Задать вопрос", exit=False)()
 # b1 = KeyboardButton('help')
 # b2 = KeyboardButton('/echo')
 # b3 = KeyboardButton('send_photo')
