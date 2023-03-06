@@ -29,17 +29,22 @@ class ExitReplay:
         self.kb = ReplyKeyboardMarkup(resize_keyboard=True)
         if exit:
             self.kb.add(KeyboardButton("Выход"))
-
+        count = 2
         for _param in params:
-            self.params_add(_param)
+            ind = count % 2 == 0
+            self.params_add(_param, ind)
+            count += 1
     def __call__(self, *args, **kwargs):
         return self.kb
 
-    def params_add(self, _param):
+    def params_add(self, _param, ind):
         k_i = KeyboardButton(_param)
-        self.kb.add(k_i)
+        if ind:
+            self.kb.add(k_i)
+        else:
+            self.kb.insert(k_i)
 
-menu_kb = ExitReplay('Помощь', 'Отправить фото', 'Счетчик', "Задать вопрос", exit=False)()
+menu_kb = ExitReplay('Помощь', 'Отправить фото', 'Счетчик', "Задать вопрос", "Создание профиля", exit=False)()
 # b1 = KeyboardButton('help')
 # b2 = KeyboardButton('/echo')
 # b3 = KeyboardButton('send_photo')

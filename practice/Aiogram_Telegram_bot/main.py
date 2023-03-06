@@ -3,13 +3,13 @@ from aiogram.types import ReplyKeyboardRemove
 from aiogram.dispatcher.filters import Text
 from keyboards import menu_kb, start_kb, ikb, ExitReplay, get_inline_keyboard, cb, ReplyKeyboardMarkup, KeyboardButton
 import random
-from token import TOKEN
+from other.sqlite import db_start, create_profile, edit_profile
 
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.dispatcher import FSMContext
 
-TOKEN_API = TOKEN
+TOKEN_API = ""
 bot = Bot(token=TOKEN_API)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
@@ -18,10 +18,11 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 class ClientStatesGroup(StatesGroup):
     photo = State()
     desc = State()
+
 def get_cancel() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(resize_keyboard=True).add(KeyboardButton('Отмена'))
 
-@dp.message_handler(commands=['state_machine'], state=None)
+@dp.message_handler(text='Создание профиля', state=None)
 async def start_st(message: types.Message):
     await ClientStatesGroup.photo.set()
     await message.answer("Отправь фото", reply_markup=get_cancel())
@@ -36,20 +37,22 @@ async def load_photo(message: types.Message, state: FSMContext):
     async with state.proxy() as data: #Получаем доступ к хранилищу состояний
         data['photo'] = message.photo[0].file_id
     await ClientStatesGroup.next()
-    await message.reply("А теперь отправь нам описание")
+    await message.reply("Теперь отправь свое имя")
 
 @dp.message_handler(state=ClientStatesGroup.desc)
 async def load_text(message: types.Message, state: FSMContext):
     async with state.proxy() as data: #Получаем доступ к хранилищу состояний
         data['desc'] = message.text
     # await ClientStatesGroup.next()
-    await message.reply("Ваша фотография сохранена")
+    await edit_profile(state, user_id=message.chat.id)
+    await message.reply("Ваш профиль создан")
 
-    async with state.proxy() as data:
-        await bot.send_photo(message.chat.id,
-                             photo=data["photo"],
-                             caption=data["desc"])
+    # async with state.proxy() as data:
+    #     await bot.send_photo(message.chat.id,
+    #                          photo=data["photo"],
+    #                          caption=data["desc"])
     await state.finish()  # Заканчиваем
+# @dp.message_handler(Text("Отмена"), state='*')
 @dp.message_handler(Text("Отмена"))
 async def cancel_st(message: types.Message, state: FSMContext):
     current_state = await state.get_state()
@@ -59,8 +62,8 @@ async def cancel_st(message: types.Message, state: FSMContext):
     await state.finish()
 
 
-admin_id = 1390059189
-admin_name = "Kirill"
+# admin_id = 1390059189
+# admin_name = "Kirill"
 stickerExample = "CAACAgIAAxkBAAEH-7xkAkIVDFgDcNq14QbDzcNY1mB91AACAw4AAkD-yUuLHupAbb8sOC4E"
 KB = ExitReplay("Меню")()
 number = 0
@@ -78,6 +81,7 @@ def send_random_photo():
 
 async def on_startup(_):
     print("Бот был запущен")
+    await db_start()
 
 @dp.message_handler(commands=['start'])
 async def echo(message: types.Message):
@@ -85,6 +89,7 @@ async def echo(message: types.Message):
     await bot.send_sticker(message.from_user.id, sticker=stickerExample)
     await message.answer(text=text, reply_markup=start_kb)
     await message.delete()
+    await create_profile(user_id=message.from_user.id)
 
 @dp.message_handler(Text(equals="Меню"))
 async def echo(message: types.Message):
@@ -104,6 +109,7 @@ async def ikb_cd_handler(callback: types.CallbackQuery, callback_data: dict) -> 
     elif callback_data.get('action') == "btn_random":
         number = random.randint(1, 100)
         await callback.message.edit_text(f"The current number is {number}", reply_markup=get_inline_keyboard())
+
 @dp.callback_query_handler()
 async def vote_callback(callback: types.CallbackQuery):
     if callback.data == "like":
