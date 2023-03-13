@@ -1,17 +1,37 @@
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import ReplyKeyboardRemove
 from aiogram.dispatcher.filters import Text
+from aiogram.dispatcher.middlewares import BaseMiddleware
+from aiogram.dispatcher.handler import CancelHandler, current_handler
+
 from keyboards import menu_kb, start_kb, ikb, ExitReplay, get_inline_keyboard, cb, ReplyKeyboardMarkup, KeyboardButton
-import random
 from other.sqlite import db_start, create_profile, edit_profile
+import random
+from pprint import pprint
 
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.dispatcher import FSMContext
 
-TOKEN_API = ""
+TOKEN_API = "5330446051:AAEWOOzIukJqBgyI0N5CjRAZv9ooTJaIe5Q"
 bot = Bot(token=TOKEN_API)
 dp = Dispatcher(bot, storage=MemoryStorage())
+admin_id = 1390059189
+
+#Middleware
+
+def set_key(key: str = None):
+    def decorator(func):
+        setattr(func, "key", key)
+        return func
+    return decorator
+
+class AddminMiddleware(BaseMiddleware):
+    async def on_process_message(self, message: types.Message, data: dict):
+        handler = current_handler.get()
+        if handler:
+            key = getattr(handler, "key", "Такого атрибута нет")
+            print(key)
 
 
 #Машина состояний
@@ -21,6 +41,14 @@ class ClientStatesGroup(StatesGroup):
 
 def get_cancel() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(resize_keyboard=True).add(KeyboardButton('Отмена'))
+
+@dp.message_handler(text="Отмена", state="*")
+async def cancel_st(message: types.Message, state: FSMContext):
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+    await message.reply("Отменил", reply_markup=menu_kb)
+    await state.finish()
 
 @dp.message_handler(text='Создание профиля', state=None)
 async def start_st(message: types.Message):
@@ -53,16 +81,10 @@ async def load_text(message: types.Message, state: FSMContext):
     #                          caption=data["desc"])
     await state.finish()  # Заканчиваем
 # @dp.message_handler(Text("Отмена"), state='*')
-@dp.message_handler(Text("Отмена"))
-async def cancel_st(message: types.Message, state: FSMContext):
-    current_state = await state.get_state()
-    if current_state is None:
-        return
-    await message.reply("Отменил", reply_markup=menu_kb)
-    await state.finish()
 
 
-# admin_id = 1390059189
+
+
 # admin_name = "Kirill"
 stickerExample = "CAACAgIAAxkBAAEH-7xkAkIVDFgDcNq14QbDzcNY1mB91AACAw4AAkD-yUuLHupAbb8sOC4E"
 KB = ExitReplay("Меню")()
@@ -78,20 +100,20 @@ def send_random_photo():
     random_number = random.randint(0, len(photos_list) - 1)
     return photos_list.pop(random_number)
 
-
 async def on_startup(_):
     print("Бот был запущен")
     await db_start()
 
+#Функционал бота
 @dp.message_handler(commands=['start'])
 async def echo(message: types.Message):
     text = "Привет, добро пожаловать в бота"
     await bot.send_sticker(message.from_user.id, sticker=stickerExample)
     await message.answer(text=text, reply_markup=start_kb)
-    await message.delete()
     await create_profile(user_id=message.from_user.id)
 
 @dp.message_handler(Text(equals="Меню"))
+@set_key("Hello!")
 async def echo(message: types.Message):
     text = "Меню бота: "
     await message.answer(text=text, reply_markup=menu_kb)
@@ -125,8 +147,6 @@ async def vote_callback(callback: types.CallbackQuery):
         await callback.message.answer(text="Главное меню", reply_markup=menu_kb)
 
 
-
-
 @dp.message_handler(Text(equals="Помощь"))
 async def help(message: types.Message):
     text = "<em>Помощь <b>находится</b> в разработке!</em>😅"
@@ -158,4 +178,5 @@ async def gen(message: types.Message):
 #         await message.answer('Сообщение отправлено')
 
 if __name__ == '__main__':
+    dp.middleware.setup(AddminMiddleware())
     executor.start_polling(dp, on_startup=on_startup, skip_updates=True)

@@ -43,14 +43,15 @@ def normalize():
 
 def example1():
     mystery = "\U0001f4a9"
-    mystery2 = "💩"
+    # mystery2 = "💩"
+    mystery2 = "\u2665"
     # print(mystery)
-    # print(name := unicodedata.name(mystery))
+    print(name := unicodedata.name(mystery))
     pop_bytes = mystery.encode("utf-8")
     print(pop_bytes)
     # print(pop_bytes)
     pop_string = pop_bytes.decode("utf-8")
-    print(pop_string)
+    # print(pop_string)
     print(pop_string == mystery2)
 
 example1()
